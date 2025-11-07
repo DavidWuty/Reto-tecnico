@@ -107,7 +107,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useTasks } from '@/composables/useTasks'
+import { useTasks } from '~/composables/useTasks'
 
 const router = useRouter()
 const { getTasks, createTask, updateTask, deleteTask } = useTasks()

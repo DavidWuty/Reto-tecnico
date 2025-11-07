@@ -1,69 +1,44 @@
 <template>
-  <div class="container mt-4">
-    <h3>🆕 Crear Nueva Tarea</h3>
+  <v-container>
+    <v-card class="pa-6">
+      <v-card-title class="text-h5">📝 Crear nueva tarea</v-card-title>
+      <v-divider class="mb-4" />
 
-    <form @submit.prevent="addTask">
-      <div class="mb-3">
-        <label>Título *</label>
-        <input v-model="task.title" type="text" class="form-control" required />
-      </div>
+      <v-form @submit.prevent="saveTask">
+        <v-text-field v-model="form.title" label="Título" required />
+        <v-switch v-model="form.completed" label="¿Completada?" />
+        <v-text-field v-model="form.date" label="Fecha" type="date" />
+        <v-textarea v-model="form.description" label="Descripción" />
+        <v-textarea v-model="form.comments" label="Comentarios" />
+        <v-text-field v-model="form.tags" label="Tags (separados por comas)" />
 
-      <div class="mb-3">
-        <label>Descripción</label>
-        <textarea v-model="task.description" class="form-control"></textarea>
-      </div>
-
-      <div class="mb-3">
-        <label>Comentarios</label>
-        <input v-model="task.comments" type="text" class="form-control" />
-      </div>
-
-      <div class="mb-3">
-        <label>Tags</label>
-        <input v-model="task.tags" type="text" class="form-control" placeholder="Ej. trabajo, urgente" />
-      </div>
-
-      <div class="mb-3">
-        <label>Fecha</label>
-        <input v-model="task.due_date" type="date" class="form-control" />
-      </div>
-
-      <div class="form-check mb-3">
-        <input v-model="task.isCompleted" class="form-check-input" type="checkbox" id="isCompleted" />
-        <label class="form-check-label" for="isCompleted">Completada</label>
-      </div>
-
-      <button class="btn btn-success">Guardar Tarea</button>
-    </form>
-  </div>
+        <v-btn type="submit" color="primary" class="mt-4">Guardar</v-btn>
+      </v-form>
+    </v-card>
+  </v-container>
 </template>
 
-<script>
-import { createTask } from "@/api/tasksApi";
+<script setup lang="ts">
+import { ref } from "vue"
+import { createTask } from "~/composables/useTasks"
+import { useRouter } from "vue-router"
 
-export default {
-  data() {
-    return {
-      task: {
-        title: "",
-        description: "",
-        comments: "",
-        tags: "",
-        due_date: "",
-        isCompleted: false,
-      },
-    };
-  },
-  methods: {
-    async addTask() {
-      try {
-        await createTask(this.task);
-        alert("✅ Tarea creada correctamente");
-        this.$router.push("/tasks");
-      } catch (error) {
-        console.error("Error al crear tarea:", error);
-      }
-    },
-  },
-};
+const router = useRouter()
+const form = ref({
+  title: "",
+  completed: false,
+  date: "",
+  description: "",
+  comments: "",
+  tags: "",
+})
+
+const saveTask = async () => {
+  try {
+    await createTask(form.value)
+    router.push("/tasks")
+  } catch (error) {
+    console.error("Error al guardar tarea:", error)
+  }
+}
 </script>
