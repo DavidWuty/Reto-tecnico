@@ -1,12 +1,9 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-      <router-link to="/" class="navbar-brand">Gestor de Tareas</router-link>
-      <div>
-        <router-link to="/" class="btn btn-outline-light mx-1">Inicio</router-link>
-        <router-link to="/tasks" class="btn btn-outline-light mx-1">Tareas</router-link>
-        <router-link to="/new" class="btn btn-outline-light mx-1">Nueva Tarea</router-link>
-      </div>
-    </div>
-  </nav>
+  <v-app-bar app color="primary" dark>
+    <v-toolbar-title>Tareas App</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn to="/" text>Inicio</v-btn>
+    <v-btn to="/tasks" text>Tareas</v-btn>
+    <v-btn to="/tasks/new" text>Nueva tarea</v-btn>
+  </v-app-bar>
 </template>

@@ -1,44 +1,100 @@
 <template>
   <v-container>
     <v-card class="pa-6">
-      <v-card-title class="text-h5">📝 Crear nueva tarea</v-card-title>
+      <v-card-title class="text-h5">🆕 Crear Nueva Tarea</v-card-title>
       <v-divider class="mb-4" />
 
-      <v-form @submit.prevent="saveTask">
-        <v-text-field v-model="form.title" label="Título" required />
-        <v-switch v-model="form.completed" label="¿Completada?" />
-        <v-text-field v-model="form.date" label="Fecha" type="date" />
-        <v-textarea v-model="form.description" label="Descripción" />
-        <v-textarea v-model="form.comments" label="Comentarios" />
-        <v-text-field v-model="form.tags" label="Tags (separados por comas)" />
+      <v-form @submit.prevent="handleCreateTask">
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="task.title"
+              label="Título *"
+              required
+            />
+          </v-col>
 
-        <v-btn type="submit" color="primary" class="mt-4">Guardar</v-btn>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="task.description"
+              label="Descripción"
+            />
+          </v-col>
+
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="task.tags"
+              label="Tags (separados por coma)"
+            />
+          </v-col>
+
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="task.date"
+              label="Fecha (YYYY-MM-DD)"
+              type="date"
+            />
+          </v-col>
+
+          <v-col cols="12">
+            <v-textarea
+              v-model="task.comments"
+              label="Comentarios"
+              rows="2"
+            />
+          </v-col>
+
+          <v-col cols="12">
+            <v-switch
+              v-model="task.completed"
+              label="¿Completada?"
+            />
+          </v-col>
+
+          <v-col cols="12" class="d-flex justify-end">
+            <v-btn color="primary" type="submit">Guardar tarea</v-btn>
+            <v-btn class="ml-2" color="secondary" @click="goBack">Cancelar</v-btn>
+          </v-col>
+        </v-row>
       </v-form>
     </v-card>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import { createTask } from "~/composables/useTasks"
-import { useRouter } from "vue-router"
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useTasks } from "~/composables/useTasks";
 
-const router = useRouter()
-const form = ref({
+const { addTask } = useTasks();
+const router = useRouter();
+
+const task = ref({
   title: "",
-  completed: false,
-  date: "",
   description: "",
   comments: "",
+  completed: false,
   tags: "",
-})
+  date: "",
+});
 
-const saveTask = async () => {
-  try {
-    await createTask(form.value)
-    router.push("/tasks")
-  } catch (error) {
-    console.error("Error al guardar tarea:", error)
+const handleCreateTask = async () => {
+  if (!task.value.title) {
+    alert("El título es obligatorio");
+    return;
   }
-}
+
+  try {
+    await addTask(task.value);
+    alert("✅ Tarea creada correctamente");
+    router.push("/tasks"); // Redirige a la lista de tareas
+  } catch (err) {
+    console.error("Error al crear tarea:", err);
+    alert("❌ No se pudo crear la tarea");
+  }
+};
+
+const goBack = () => {
+  router.push("/tasks");
+};
 </script>

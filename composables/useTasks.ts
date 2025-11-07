@@ -1,44 +1,38 @@
-// src/api/tasksApi.js
-import axios from "axios";
+import { ref } from "vue";
+import {
+    getTasks,
+    getTaskById,
+    createTask,
+    updateTask,
+    deleteTask,
+} from "~/api/tasksApi";
 
-const API_URL = "https://ecsdevapi.nextline.mx/vdev/tasks-challenge/tasks";
-const TOKEN =
-    "Bearer e864a0c9eda63181d7d65bc73e61e3dc6b74ef9b82f7049f1fc7d9fc8f29706025bd271d1ee1822b15d654a84e1a0997b973a46f923cc9977b3fcbb064179ecd";
+const tasks = ref([]);
 
-const api = axios.create({
-    baseURL: API_URL,
-    headers: {
-        Authorization: TOKEN,
-        "Content-Type": "application/json",
-    },
-});
+export const useTasks = () => {
+    const loadTasks = async () => {
+        const data = await getTasks();
+        tasks.value = data.content || [];
+    };
 
-// 🔹 Obtener todas las tareas
-export const getTasks = async () => {
-    const res = await api.get("/");
-    return res.data;
-};
+    const addTask = async (task: any) => {
+        const newTask = await createTask(task);
+        tasks.value.push(newTask);
+    };
 
-// 🔹 Obtener tarea por ID
-export const getTaskById = async (id) => {
-    const res = await api.get(`/${id}`);
-    return res.data;
-};
+    const editTask = async (id: string, updatedTask: any) => {
+        await updateTask(id, updatedTask);
+        await loadTasks();
+    };
 
-// 🔹 Crear una nueva tarea
-export const createTask = async (task) => {
-    const res = await api.post("/", task);
-    return res.data;
-};
+    const removeTask = async (id: string) => {
+        await deleteTask(id);
+        await loadTasks();
+    };
 
-// 🔹 Actualizar tarea
-export const updateTask = async (id, updatedTask) => {
-    const res = await api.put(`/${id}`, updatedTask);
-    return res.data;
-};
+    const fetchTask = async (id: string) => {
+        return await getTaskById(id);
+    };
 
-// 🔹 Eliminar tarea
-export const deleteTask = async (id) => {
-    const res = await api.delete(`/${id}`);
-    return res.data;
+    return { tasks, loadTasks, addTask, editTask, removeTask, fetchTask };
 };
